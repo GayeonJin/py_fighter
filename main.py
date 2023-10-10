@@ -33,7 +33,7 @@ def game_over() :
     font = pygame.font.Font('freesansbold.ttf', 80)
     text_suf = font.render('Game Over', True, COLOR_RED)
     text_rect = text_suf.get_rect()
-    text_rect.center = ((gctrl.pad_width / 2), (pad_height / 2))
+    text_rect.center = ((gctrl.pad_width / 2), (gctrl.pad_height / 2))
 
     gctrl.gamepad.blit(text_suf, text_rect)
     pygame.display.update()
