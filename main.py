@@ -6,6 +6,7 @@ import random
 from time import sleep
 
 from gobject import *
+from gresource import *
 
 SCORE_UNIT = 10
 
@@ -47,6 +48,7 @@ def terminate() :
 def run_game() :
     global clock
     global background, aircraft, enemy, fires, boom
+    global snd_shot, snd_explosion
 
     start_game()
 
@@ -77,7 +79,7 @@ def run_game() :
                     y_change = -1 * AIRCRAFT_SPEED
                 elif event.key == pygame.K_DOWN :
                     y_change = AIRCRAFT_SPEED
-                elif event.key == pygame.K_z :
+                elif event.key == pygame.K_SPACE :
                     bullet_x = aircraft.ex
                     bullet_y = aircraft.y + aircraft.height / 2
                     bullets.append(game_object(bullet_x, bullet_y, 'id_bullet'))
@@ -135,7 +137,7 @@ def run_game() :
             for i, bullet in enumerate(bullets) :
                 bullet.move(BULLET_SPEED, 0)
 
-                if bullet.check_crash(enemy) == True :
+                if bullet.check_crash(enemy, snd_shot) == True :
                     bullets.remove(bullet)
                     enemy.kill_life()
                     score_count += SCORE_UNIT
@@ -151,13 +153,13 @@ def run_game() :
                 bullet.draw()
 
         # Check crash
-        if aircraft.check_crash(enemy) == True :
+        if aircraft.check_crash(enemy, snd_explosion) == True :
             enemy.init_position(INIT_POS_RIGHT)
             aircraft.kill_life()
             boom.set_position(aircraft.ex, aircraft.y)
             boom.draw()
           
-        if aircraft.check_crash(fire) == True :
+        if aircraft.check_crash(fire, snd_explosion) == True :
             boom.set_position(aircraft.ex, aircraft.y)
             boom.draw()
 
@@ -201,18 +203,25 @@ def start_game() :
 def init_game() :
     global clock
     global background, aircraft, enemy, fires, boom
+    global snd_shot, snd_explosion
 
     fires = []
 
+    # initialize
     pygame.init()
     clock = pygame.time.Clock()
     
+    # backgroud and screen
     background = backgroud_object('id_background')
     pad_width = background.width
     pad_height = background.height
 
     gctrl.set_param(pygame.display.set_mode((pad_width, pad_height)), pad_width, pad_height)
     pygame.display.set_caption("Py Fighter")
+
+    # sound resource
+    snd_shot = pygame.mixer.Sound(get_snd_resource('snd_shot'))
+    snd_explosion = pygame.mixer.Sound(get_snd_resource('snd_explosion'))
 
     # aircraft
     aircraft = game_object(0, 0, 'id_aircraft')

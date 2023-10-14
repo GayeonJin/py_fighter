@@ -4,7 +4,7 @@ import sys
 
 resource_path = ''
 
-resource_item = {
+resource_image = {
     'id_background' : 'image/background.png',
     'id_aircraft' : 'image/plane.png',
     'id_enemy' : 'image/enemy.png',
@@ -14,8 +14,16 @@ resource_item = {
     'id_boom' : 'image/boom.png'
 }
 
-def get_resource(resource_id) :
-    return resource_path + resource_item[resource_id]
+resource_sound = {
+    'snd_shot' : 'sound/shot.wav',
+    'snd_explosion' : 'sound/explosion.wav'
+}
+
+def get_img_resource(resource_id) :
+    return resource_path + resource_image[resource_id]
+
+def get_snd_resource(resource_id) :
+    return resource_path + resource_sound[resource_id]
 
 if __name__ == '__main__' :
     print('game resoure')

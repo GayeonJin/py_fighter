@@ -5,7 +5,7 @@ import pygame
 import random
 from time import sleep
 
-import gresource
+from gresource import *
 
 INIT_POS_LEFT = 0
 INIT_POS_RIGHT = 1
@@ -26,7 +26,7 @@ class game_object :
 
     def __init__(self, x, y, resource_id) :
         if resource_id != None :
-            resource_path = gresource.get_resource(resource_id)
+            resource_path = get_img_resource(resource_id)
             self.object = pygame.image.load(resource_path)
             self.width = self.object.get_width()
             self.height = self.object.get_height()
@@ -95,18 +95,20 @@ class game_object :
         else :
             return True
 
-    def check_crash(self, enemy_item) :
+    def check_crash(self, enemy_item, sound_object) :
         if self.object != None and enemy_item.object != None :
             if self.ex > enemy_item.x :
                 if (self.y > enemy_item.y and self.y < enemy_item.ey) or (self.ey > enemy_item.y and self.ey < enemy_item.ey) :
                     #print("crashed1 : ",  self.x, self.y, self.ex, self.ey)
                     #print("crashed2 : ",  enemy_item.x, enemy_item.y, enemy_item.ex, enemy_item.ey)
+                    if sound_object != None :
+                        sound_object.play()
                     return True
         return False
 
 class backgroud_object(game_object) :
     def __init__(self, resource_id) :
-        resource_path = gresource.get_resource(resource_id)
+        resource_path = get_img_resource(resource_id)
         self.object = pygame.image.load(resource_path)
         self.object2 = self.object.copy()
 
