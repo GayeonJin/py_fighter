@@ -10,25 +10,25 @@ from gresource import *
 
 SCORE_UNIT = 10
 
+STATUS_XOFFSET = 10
+STATUS_YOFFSET = 5
+
 AIRCRAFT_SPEED = 5
 BULLET_SPEED = 15
 ENEMY_SPEED = -7
 FIRE_SPEED = -15
 NOFIRE_SPEED = -30
 
-COLOR_BLACK = (0, 0, 0)
-COLOR_WHITE = (255, 255, 255)
-COLOR_RED = (255, 0, 0)
-
 def draw_life(count) :
     font = pygame.font.SysFont(None, 25)
     text = font.render("Life : " + str(count), True, COLOR_WHITE)
-    gctrl.gamepad.blit(text, (gctrl.pad_width - 100, 0))
+    text_rect = text.get_rect()
+    gctrl.gamepad.blit(text, (gctrl.pad_width - text_rect.width - STATUS_XOFFSET, STATUS_YOFFSET))
 
 def draw_score(count) :
     font = pygame.font.SysFont(None, 25)
     text = font.render("Score : " + str(count), True, COLOR_WHITE)
-    gctrl.gamepad.blit(text, (10, 0))
+    gctrl.gamepad.blit(text, (10, STATUS_YOFFSET))
 
 def game_over() :
     font = pygame.font.Font('freesansbold.ttf', 80)

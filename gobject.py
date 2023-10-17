@@ -11,7 +11,7 @@ INIT_POS_LEFT = 0
 INIT_POS_RIGHT = 1
 
 class game_ctrl :
-    def __init(self) :
+    def __init__(self) :
         self.gamepad = None 
         self.pad_width = 640
         self.pad_height = 320
