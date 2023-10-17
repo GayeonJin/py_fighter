@@ -59,7 +59,6 @@ def run_game() :
 
     aircraft.init_position(INIT_POS_LEFT)
     aircraft.set_life_count(3)
-    y_change = 0
 
     enemy.init_position(INIT_POS_RIGHT)
     enemy.set_life_count(1)
@@ -76,9 +75,9 @@ def run_game() :
 
             if event.type == pygame.KEYDOWN :
                 if event.key == pygame.K_UP:
-                    y_change = -1 * AIRCRAFT_SPEED
+                    aircraft.set_speed(0, -1 * AIRCRAFT_SPEED)
                 elif event.key == pygame.K_DOWN :
-                    y_change = AIRCRAFT_SPEED
+                    aircraft.set_speed(0, AIRCRAFT_SPEED)
                 elif event.key == pygame.K_SPACE :
                     bullet_x = aircraft.ex
                     bullet_y = aircraft.y + aircraft.height / 2
@@ -88,9 +87,10 @@ def run_game() :
 
             if event.type == pygame.KEYUP :
                 if event.key == pygame.K_UP or event.key == pygame.K_DOWN :
-                    y_change = 0
+                    aircraft.set_speed(0, 0)
 
-        aircraft.move(0, y_change)
+        # Update aircraft
+        aircraft.move()
 
         # Clear gamepad
         gctrl.gamepad.fill(COLOR_WHITE)
@@ -122,10 +122,7 @@ def run_game() :
                 enemy.set_life_count(1)
 
         # Draw fireball
-        if fire.object == None :
-            fire.move(NOFIRE_SPEED, 0)
-        else :
-            fire.move(FIRE_SPEED, 0)
+        fire.move()
 
         if fire.is_out_of_range() == True :
             random.shuffle(fires)
@@ -228,12 +225,18 @@ def init_game() :
 
     # enemy
     enemy = game_object(pad_width, random.randrange(0, pad_height), 'id_enemy')
+    enemy.set_speed(ENEMY_SPEED, 0)
 
     fires.append(game_object(0, 0, 'id_fire1'))
+    fires[0].set_speed(FIRE_SPEED, 0)
+
     fires.append(game_object(0, 0, 'id_fire2'))
+    fires[1].set_speed(FIRE_SPEED, 0)
 
     for i in range(3) :
-        fires.append(game_object(0, 0, None))
+        fire = game_object(0, 0, None)
+        fire.set_speed(NOFIRE_SPEED, 0)
+        fires.append(fire)
 
     # effect
     boom = game_object(0, 0, 'id_boom')

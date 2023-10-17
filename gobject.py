@@ -37,6 +37,8 @@ class game_object :
 
         self.set_position(x, y)
 
+        self.dx = 0
+        self.dy = 0
         self.life_count = 1
 
     def init_position(self, mode) :
@@ -51,7 +53,16 @@ class game_object :
         self.ex = self.x + self.width - 1
         self.ey = self.y + self.height - 1
         
-    def move(self, del_x, del_y) :
+    def set_speed(self, del_x, del_y) :
+        self.dx = del_x
+        self.dy = del_y
+
+    def move(self, del_x = 0, del_y = 0) :
+        if del_x == 0 :
+            del_x = self.dx
+        if del_y == 0 :
+            del_y = self.dy
+
         self.x += del_x
         self.y += del_y
 
