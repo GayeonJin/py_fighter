@@ -8,6 +8,8 @@ from time import sleep
 from gobject import *
 from gresource import *
 
+TITLE_STR = "Py Fighter"
+
 SCORE_UNIT = 10
 
 STATUS_XOFFSET = 10
@@ -82,8 +84,8 @@ def run_game() :
                     bullet_x = aircraft.ex
                     bullet_y = aircraft.y + aircraft.height / 2
                     bullets.append(game_object(bullet_x, bullet_y, 'id_bullet'))
-                elif event.key == pygame.K_SPACE :
-                    sleep(5)
+                elif event.key == pygame.K_F10 :
+                    gctrl.save_scr_capture(TITLE_STR)
 
             if event.type == pygame.KEYUP :
                 if event.key == pygame.K_UP or event.key == pygame.K_DOWN :
@@ -173,7 +175,7 @@ def start_game() :
     gctrl.gamepad.fill(COLOR_WHITE)
 
     font = pygame.font.Font('freesansbold.ttf', 80)
-    text_suf = font.render("Py Fighter", True, COLOR_BLACK)
+    text_suf = font.render(TITLE_STR, True, COLOR_BLACK)
     text_rect = text_suf.get_rect()
     text_rect.center = ((gctrl.pad_width / 2), (gctrl.pad_height / 2))
     gctrl.gamepad.blit(text_suf, text_rect)
@@ -214,7 +216,7 @@ def init_game() :
     pad_height = background.height
 
     gctrl.set_param(pygame.display.set_mode((pad_width, pad_height)), pad_width, pad_height)
-    pygame.display.set_caption("Py Fighter")
+    pygame.display.set_caption(TITLE_STR)
 
     # sound resource
     snd_shot = pygame.mixer.Sound(get_snd_resource('snd_shot'))
