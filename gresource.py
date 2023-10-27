@@ -10,6 +10,8 @@ COLOR_BLUE = (255, 0, 0)
 resource_path = ''
 
 resource_image = {
+    'id_title_bg' : 'image/title_bg.jpg',
+    'id_title' : 'image/title.png',
     'id_background' : 'image/background.png',
     'id_aircraft' : 'image/plane.png',
     'id_enemy' : 'image/enemy.png',

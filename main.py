@@ -174,16 +174,28 @@ def start_game() :
     # Clear gamepad
     gctrl.gamepad.fill(COLOR_WHITE)
 
+    title_bg = pygame.image.load(get_img_resource('id_title_bg'))
+    rect = pygame.Rect(0, 0, gctrl.pad_width, gctrl.pad_height)
+    gctrl.gamepad.blit(title_bg, rect)
+
+    title = pygame.image.load(get_img_resource('id_title'))
+    rect = title.get_rect()
+    rect.center = ((gctrl.pad_width / 2), (gctrl.pad_height / 2))
+    rect.top = rect.top - 40
+    gctrl.gamepad.blit(title, rect)
+
+    '''
     font = pygame.font.Font('freesansbold.ttf', 80)
     text_suf = font.render(TITLE_STR, True, COLOR_BLACK)
-    text_rect = text_suf.get_rect()
-    text_rect.center = ((gctrl.pad_width / 2), (gctrl.pad_height / 2))
-    gctrl.gamepad.blit(text_suf, text_rect)
+    rect = text_suf.get_rect()
+    rect.center = ((gctrl.pad_width / 2), (gctrl.pad_height / 2))
+    gctrl.gamepad.blit(text_suf, rect)
+    '''
 
-    font1 = pygame.font.SysFont(None, 25)
+    font1 = pygame.font.SysFont(None, 40)
     text_suf1 = font1.render("press any key", True, COLOR_RED)
     text_rect1 = text_suf1.get_rect()
-    text_rect1.top = text_rect.bottom + 50
+    text_rect1.top = rect.bottom + 50
     text_rect1.centerx = gctrl.pad_width / 2
     gctrl.gamepad.blit(text_suf1, text_rect1)
 
