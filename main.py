@@ -25,20 +25,20 @@ def draw_life(count) :
     font = pygame.font.SysFont(None, 25)
     text = font.render("Life : " + str(count), True, COLOR_WHITE)
     text_rect = text.get_rect()
-    gctrl.gamepad.blit(text, (gctrl.pad_width - text_rect.width - STATUS_XOFFSET, STATUS_YOFFSET))
+    gctrl.surface.blit(text, (gctrl.width - text_rect.width - STATUS_XOFFSET, STATUS_YOFFSET))
 
 def draw_score(count) :
     font = pygame.font.SysFont(None, 25)
     text = font.render("Score : " + str(count), True, COLOR_WHITE)
-    gctrl.gamepad.blit(text, (10, STATUS_YOFFSET))
+    gctrl.surface.blit(text, (10, STATUS_YOFFSET))
 
 def game_over() :
     font = pygame.font.Font('freesansbold.ttf', 80)
     text_suf = font.render('Game Over', True, COLOR_RED)
     text_rect = text_suf.get_rect()
-    text_rect.center = ((gctrl.pad_width / 2), (gctrl.pad_height / 2))
+    text_rect.center = ((gctrl.width / 2), (gctrl.height / 2))
 
-    gctrl.gamepad.blit(text_suf, text_rect)
+    gctrl.surface.blit(text_suf, text_rect)
     pygame.display.update()
     sleep(2)
     run_game()
@@ -95,7 +95,7 @@ def run_game() :
         aircraft.move()
 
         # Clear gamepad
-        gctrl.gamepad.fill(COLOR_WHITE)
+        gctrl.surface.fill(COLOR_WHITE)
 
         # Draw background
         background.scroll()
@@ -172,32 +172,32 @@ def run_game() :
 
 def start_game() :
     # Clear gamepad
-    gctrl.gamepad.fill(COLOR_WHITE)
+    gctrl.surface.fill(COLOR_WHITE)
 
     title_bg = pygame.image.load(get_img_resource('id_title_bg'))
-    rect = pygame.Rect(0, 0, gctrl.pad_width, gctrl.pad_height)
-    gctrl.gamepad.blit(title_bg, rect)
+    rect = pygame.Rect(0, 0, gctrl.width, gctrl.height)
+    gctrl.surface.blit(title_bg, rect)
 
     title = pygame.image.load(get_img_resource('id_title'))
     rect = title.get_rect()
-    rect.center = ((gctrl.pad_width / 2), (gctrl.pad_height / 2))
+    rect.center = ((gctrl.width / 2), (gctrl.height / 2))
     rect.top = rect.top - 40
-    gctrl.gamepad.blit(title, rect)
+    gctrl.surface.blit(title, rect)
 
     '''
     font = pygame.font.Font('freesansbold.ttf', 80)
     text_suf = font.render(TITLE_STR, True, COLOR_BLACK)
     rect = text_suf.get_rect()
-    rect.center = ((gctrl.pad_width / 2), (gctrl.pad_height / 2))
-    gctrl.gamepad.blit(text_suf, rect)
+    rect.center = ((gctrl.width / 2), (gctrl.height / 2))
+    gctrl.surface.blit(text_suf, rect)
     '''
 
     font1 = pygame.font.SysFont(None, 40)
     text_suf1 = font1.render("press any key", True, COLOR_RED)
     text_rect1 = text_suf1.get_rect()
     text_rect1.top = rect.bottom + 50
-    text_rect1.centerx = gctrl.pad_width / 2
-    gctrl.gamepad.blit(text_suf1, text_rect1)
+    text_rect1.centerx = gctrl.width / 2
+    gctrl.surface.blit(text_suf1, text_rect1)
 
     while True :
         for event in pygame.event.get():
@@ -227,7 +227,7 @@ def init_game() :
     pad_width = background.width
     pad_height = background.height
 
-    gctrl.set_param(pygame.display.set_mode((pad_width, pad_height)), pad_width, pad_height)
+    gctrl.set_surface(pygame.display.set_mode((pad_width, pad_height)))
     pygame.display.set_caption(TITLE_STR)
 
     # sound resource
