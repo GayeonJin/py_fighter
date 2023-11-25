@@ -22,23 +22,14 @@ FIRE_SPEED = -15
 NOFIRE_SPEED = -30
 
 def draw_life(count) :
-    font = pygame.font.SysFont(None, 25)
-    text = font.render("Life : " + str(count), True, COLOR_WHITE)
-    text_rect = text.get_rect()
-    gctrl.surface.blit(text, (gctrl.width - text_rect.width - STATUS_XOFFSET, STATUS_YOFFSET))
+    gctrl.draw_string("Life : " + str(count), STATUS_XOFFSET, STATUS_YOFFSET, ALIGN_RIGHT)
 
 def draw_score(count) :
-    font = pygame.font.SysFont(None, 25)
-    text = font.render("Score : " + str(count), True, COLOR_WHITE)
-    gctrl.surface.blit(text, (10, STATUS_YOFFSET))
+    gctrl.draw_string("Score : " + str(count), STATUS_XOFFSET, STATUS_YOFFSET, ALIGN_LEFT)
 
 def game_over() :
-    font = pygame.font.Font('freesansbold.ttf', 80)
-    text_suf = font.render('Game Over', True, COLOR_RED)
-    text_rect = text_suf.get_rect()
-    text_rect.center = ((gctrl.width / 2), (gctrl.height / 2))
+    gctrl.draw_string("Game Over", 0, 0, ALIGN_CENTER, 80, COLOR_RED)
 
-    gctrl.surface.blit(text_suf, text_rect)
     pygame.display.update()
     sleep(2)
     run_game()
@@ -184,20 +175,7 @@ def start_game() :
     rect.top = rect.top - 40
     gctrl.surface.blit(title, rect)
 
-    '''
-    font = pygame.font.Font('freesansbold.ttf', 80)
-    text_suf = font.render(TITLE_STR, True, COLOR_BLACK)
-    rect = text_suf.get_rect()
-    rect.center = ((gctrl.width / 2), (gctrl.height / 2))
-    gctrl.surface.blit(text_suf, rect)
-    '''
-
-    font1 = pygame.font.SysFont(None, 40)
-    text_suf1 = font1.render("press any key", True, COLOR_RED)
-    text_rect1 = text_suf1.get_rect()
-    text_rect1.top = rect.bottom + 50
-    text_rect1.centerx = gctrl.width / 2
-    gctrl.surface.blit(text_suf1, text_rect1)
+    gctrl.draw_string("Press any key", 0, 100, ALIGN_CENTER | ALIGN_BOTTOM, 40, COLOR_RED)
 
     while True :
         for event in pygame.event.get():
