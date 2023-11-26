@@ -39,7 +39,6 @@ def terminate() :
     sys.exit()
 
 def run_game() :
-    global clock
     global background, aircraft, enemy, fires, boom
     global snd_shot, snd_explosion
 
@@ -157,7 +156,7 @@ def run_game() :
         fire.draw()
 
         pygame.display.update()
-        clock.tick(60)
+        gctrl.clock.tick(FPS)
         
     terminate()
 
@@ -187,19 +186,14 @@ def start_game() :
                 return
 
         pygame.display.update()
-        clock.tick(60)    
+        gctrl.clock.tick(FPS)    
        
 def init_game() :
-    global clock
     global background, aircraft, enemy, fires, boom
     global snd_shot, snd_explosion
 
     fires = []
-
-    # initialize
-    pygame.init()
-    clock = pygame.time.Clock()
-    
+   
     # backgroud and screen
     background = backgroud_object('id_background')
     pad_width = background.width
