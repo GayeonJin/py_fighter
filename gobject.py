@@ -7,6 +7,12 @@ import time
 
 from gresource import *
 
+AIRCRAFT_SPEED = 5
+BULLET_SPEED = 15
+ENEMY_SPEED = -7
+FIRE_SPEED = -15
+NOFIRE_SPEED = -30
+
 class game_object :
     global gctrl
 
@@ -107,7 +113,7 @@ class aircraft_object(game_object) :
 class enemy_object(game_object) :
     def __init__(self, x, y, resource_id, speed) :
         super().__init__(x, y, resource_id)
-        
+
         self.set_speed(speed, 0)        
         self.kill_timer = 0
 
@@ -134,6 +140,52 @@ class boom_object(game_object) :
             return True
         
         return False
+    
+class bulles_group :
+    def __init__(self, speed = BULLET_SPEED) :
+        self.bullets = []
+        self.snd_shot = pygame.mixer.Sound(get_snd_resource('snd_shot'))
+        self.speed = speed
+
+    def add(self, x, y) :
+        self.bullets.append(game_object(x, y, 'id_bullet'))
+
+    def move(self, enemy) :
+        crash = False 
+        for i, bullet in enumerate(self.bullets) :
+            bullet.move(self.speed, 0)
+
+            if bullet.check_crash(enemy, self.snd_shot) == True :
+                self.bullets.remove(bullet)
+                crash = True
+
+            if bullet.is_out_of_range() == True :
+                try :
+                    self.bullets.remove(bullet)
+                except :
+                    pass
+        
+        return crash
+
+    def draw(self) :
+        for i, bullet in enumerate(self.bullets) :
+            bullet.draw()        
+
+class fires_group :
+    def __init__(self) :
+        self.fires = []
+
+        self.fires.append(enemy_object(0, 0, 'id_fire1', FIRE_SPEED))
+        self.fires.append(enemy_object(0, 0, 'id_fire2', FIRE_SPEED))
+        for i in range(3) :
+            self.fires.append(enemy_object(0, 0, None, NOFIRE_SPEED))
+
+    def get_fire(self) :
+        random.shuffle(self.fires)
+        fire = self.fires[0]
+        fire.init_position()        
+
+        return fire
 
 class backgroud_object(game_object) :
     def __init__(self, resource_id) :

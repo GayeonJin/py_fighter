@@ -15,12 +15,6 @@ SCORE_UNIT = 10
 STATUS_XOFFSET = 10
 STATUS_YOFFSET = 5
 
-AIRCRAFT_SPEED = 5
-BULLET_SPEED = 15
-ENEMY_SPEED = -7
-FIRE_SPEED = -15
-NOFIRE_SPEED = -30
-
 def draw_life(count) :
     gctrl.draw_string("Life : " + str(count), STATUS_XOFFSET, STATUS_YOFFSET, ALIGN_RIGHT)
 
@@ -39,24 +33,27 @@ def terminate() :
     sys.exit()
 
 def run_game() :
-    global background, aircraft, enemy, fires
-    global snd_shot, snd_explosion
+    global background
+    global snd_explosion
 
     start_game()
 
     score_count = 0
 
-    bullets = []
-
+    # aircraft
+    aircraft = aircraft_object(0, 0, 'id_aircraft')
     aircraft.init_position()
     aircraft.set_life_count(3)
 
+    bullets = bulles_group()
+
+    # enemy
+    enemy = enemy_object(0, 0, 'id_enemy', ENEMY_SPEED)
     enemy.init_position()
     enemy.set_life_count(1)
 
-    random.shuffle(fires)
-    fire = fires[0]
-    fire.init_position()
+    fires = fires_group()
+    fire = fires.get_fire()
 
     boom = None
 
@@ -74,7 +71,7 @@ def run_game() :
                 elif event.key == pygame.K_SPACE :
                     bullet_x = aircraft.ex
                     bullet_y = aircraft.y + aircraft.height / 2
-                    bullets.append(game_object(bullet_x, bullet_y, 'id_bullet'))
+                    bullets.add(bullet_x, bullet_y)
                 elif event.key == pygame.K_F10 :
                     gctrl.save_scr_capture(TITLE_STR)
 
@@ -117,29 +114,14 @@ def run_game() :
         fire.move()
 
         if fire.is_out_of_range() == True :
-            random.shuffle(fires)
-            fire = fires[0]
-            fire.init_position()
+            fire = fires.get_fire()
 
         # Draw bullet
-        if len(bullets) != 0 :
-            for i, bullet in enumerate(bullets) :
-                bullet.move(BULLET_SPEED, 0)
+        if bullets.move(enemy) == True :
+            enemy.kill_life()
+            score_count += SCORE_UNIT
 
-                if bullet.check_crash(enemy, snd_shot) == True :
-                    bullets.remove(bullet)
-                    enemy.kill_life()
-                    score_count += SCORE_UNIT
-
-                if bullet.is_out_of_range() == True :
-                    try :
-                        bullets.remove(bullet)
-                    except :
-                        pass
-
-        if len(bullets) != 0 :
-            for i, bullet in enumerate(bullets) :
-                bullet.draw()
+        bullets.draw()
 
         # Check crash
         if aircraft.check_crash(enemy, snd_explosion) == True :
@@ -191,10 +173,8 @@ def start_game() :
         gctrl.clock.tick(FPS)    
        
 def init_game() :
-    global background, aircraft, enemy, fires
-    global snd_shot, snd_explosion
-
-    fires = []
+    global background
+    global snd_explosion
    
     # backgroud and screen
     background = backgroud_object('id_background')
@@ -205,19 +185,7 @@ def init_game() :
     pygame.display.set_caption(TITLE_STR)
 
     # sound resource
-    snd_shot = pygame.mixer.Sound(get_snd_resource('snd_shot'))
     snd_explosion = pygame.mixer.Sound(get_snd_resource('snd_explosion'))
-
-    # aircraft
-    aircraft = aircraft_object(0, 0, 'id_aircraft')
-
-    # enemy
-    enemy = enemy_object(pad_width, random.randrange(0, pad_height), 'id_enemy', ENEMY_SPEED)
-
-    fires.append(enemy_object(0, 0, 'id_fire1', FIRE_SPEED))
-    fires.append(enemy_object(0, 0, 'id_fire2', FIRE_SPEED))
-    for i in range(3) :
-        fires.append(enemy_object(0, 0, None, NOFIRE_SPEED))
 
 if __name__ == '__main__' :
     init_game()
