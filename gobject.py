@@ -7,9 +7,6 @@ import time
 
 from gresource import *
 
-INIT_POS_LEFT = 0
-INIT_POS_RIGHT = 1
-
 class game_object :
     global gctrl
 
@@ -29,12 +26,6 @@ class game_object :
         self.dx = 0
         self.dy = 0
         self.life_count = 1
-
-    def init_position(self, mode) :
-        if mode == INIT_POS_LEFT :
-            self.set_position(gctrl.width * 0.05, gctrl.height / 2)
-        elif mode == INIT_POS_RIGHT :
-            self.set_position(gctrl.width, random.randrange(0, gctrl.height - self.height))
 
     def set_position(self, x, y) : 
         self.x = x
@@ -104,6 +95,44 @@ class game_object :
                     if sound_object != None :
                         sound_object.play()
                     return True
+        return False
+    
+class aircraft_object(game_object) :
+    def __init__(self, x, y, resource_id) :
+        super().__init__(x, y, resource_id)
+
+    def init_position(self) :
+        self.set_position(gctrl.width * 0.05, gctrl.height / 2)
+
+class enemy_object(game_object) :
+    def __init__(self, x, y, resource_id, speed) :
+        super().__init__(x, y, resource_id)
+        
+        self.set_speed(speed, 0)        
+        self.kill_timer = 0
+
+    def init_position(self) :
+        self.set_position(gctrl.width, random.randrange(0, gctrl.height - self.height))
+        self.kill_timer = 0
+
+    def kill_time(self) :
+        self.kill_timer += 1
+        if self.kill_timer > 10 :
+            return False
+    
+        return True
+
+class boom_object(game_object) :
+    def __init__(self, x, y, resource_id) :
+        super().__init__(x, y, resource_id)
+        self.count = 0
+
+    def draw(self) :
+        self.count += 1
+        if self.count <= 5 :
+            super().draw()
+            return True
+        
         return False
 
 class backgroud_object(game_object) :

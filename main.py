@@ -39,25 +39,26 @@ def terminate() :
     sys.exit()
 
 def run_game() :
-    global background, aircraft, enemy, fires, boom
+    global background, aircraft, enemy, fires
     global snd_shot, snd_explosion
 
     start_game()
 
-    boom_count = 0
     score_count = 0
 
     bullets = []
 
-    aircraft.init_position(INIT_POS_LEFT)
+    aircraft.init_position()
     aircraft.set_life_count(3)
 
-    enemy.init_position(INIT_POS_RIGHT)
+    enemy.init_position()
     enemy.set_life_count(1)
 
     random.shuffle(fires)
     fire = fires[0]
-    fire.init_position(INIT_POS_RIGHT)
+    fire.init_position()
+
+    boom = None
 
     crashed = False
     while not crashed :
@@ -100,17 +101,16 @@ def run_game() :
         # Draw enemy
         enemy.move(ENEMY_SPEED, 0)
         if enemy.is_out_of_range() == True :
-            enemy.init_position(INIT_POS_RIGHT)
+            enemy.init_position()
 
         if enemy.is_life() == True :
             enemy.draw()
         else :
-            boom.set_position(enemy.x, enemy.y)
-            boom.draw()
-            boom_count += 1
-            if boom_count > 5 :
-                boom_count = 0
-                enemy.init_position(INIT_POS_RIGHT)
+            if boom == None :
+                boom = boom_object(enemy.x, enemy.y, 'id_boom')
+
+            if enemy.kill_time() == False :
+                enemy.init_position()
                 enemy.set_life_count(1)
 
         # Draw fireball
@@ -119,7 +119,7 @@ def run_game() :
         if fire.is_out_of_range() == True :
             random.shuffle(fires)
             fire = fires[0]
-            fire.init_position(INIT_POS_RIGHT)
+            fire.init_position()
 
         # Draw bullet
         if len(bullets) != 0 :
@@ -143,17 +143,19 @@ def run_game() :
 
         # Check crash
         if aircraft.check_crash(enemy, snd_explosion) == True :
-            enemy.init_position(INIT_POS_RIGHT)
+            enemy.init_position()
             aircraft.kill_life()
-            boom.set_position(aircraft.ex, aircraft.y)
-            boom.draw()
+            boom = boom_object(aircraft.ex, aircraft.y, 'id_boom')
           
         if aircraft.check_crash(fire, snd_explosion) == True :
-            boom.set_position(aircraft.ex, aircraft.y)
-            boom.draw()
+            boom = boom_object(aircraft.ex, aircraft.y, 'id_boom')
 
         aircraft.draw()
         fire.draw()
+        
+        if boom != None :
+            if boom.draw() == False :
+                boom = None
 
         pygame.display.update()
         gctrl.clock.tick(FPS)
@@ -189,7 +191,7 @@ def start_game() :
         gctrl.clock.tick(FPS)    
        
 def init_game() :
-    global background, aircraft, enemy, fires, boom
+    global background, aircraft, enemy, fires
     global snd_shot, snd_explosion
 
     fires = []
@@ -207,25 +209,15 @@ def init_game() :
     snd_explosion = pygame.mixer.Sound(get_snd_resource('snd_explosion'))
 
     # aircraft
-    aircraft = game_object(0, 0, 'id_aircraft')
+    aircraft = aircraft_object(0, 0, 'id_aircraft')
 
     # enemy
-    enemy = game_object(pad_width, random.randrange(0, pad_height), 'id_enemy')
-    enemy.set_speed(ENEMY_SPEED, 0)
+    enemy = enemy_object(pad_width, random.randrange(0, pad_height), 'id_enemy', ENEMY_SPEED)
 
-    fires.append(game_object(0, 0, 'id_fire1'))
-    fires[0].set_speed(FIRE_SPEED, 0)
-
-    fires.append(game_object(0, 0, 'id_fire2'))
-    fires[1].set_speed(FIRE_SPEED, 0)
-
+    fires.append(enemy_object(0, 0, 'id_fire1', FIRE_SPEED))
+    fires.append(enemy_object(0, 0, 'id_fire2', FIRE_SPEED))
     for i in range(3) :
-        fire = game_object(0, 0, None)
-        fire.set_speed(NOFIRE_SPEED, 0)
-        fires.append(fire)
-
-    # effect
-    boom = game_object(0, 0, 'id_boom')
+        fires.append(enemy_object(0, 0, None, NOFIRE_SPEED))
 
 if __name__ == '__main__' :
     init_game()
