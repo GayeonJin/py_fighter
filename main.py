@@ -10,16 +10,23 @@ from gresource import *
 
 TITLE_STR = "Py Fighter"
 
-SCORE_UNIT = 10
+class player :
+    SCORE_UNIT = 10
 
-STATUS_XOFFSET = 10
-STATUS_YOFFSET = 5
+    STATUS_XOFFSET = 10
+    STATUS_YOFFSET = 5
 
-def draw_life(count) :
-    gctrl.draw_string("Life : " + str(count), STATUS_XOFFSET, STATUS_YOFFSET, ALIGN_RIGHT)
+    def __init__(self) :
+        self.score = 0
 
-def draw_score(count) :
-    gctrl.draw_string("Score : " + str(count), STATUS_XOFFSET, STATUS_YOFFSET, ALIGN_LEFT)
+    def update_score(self) :
+        self.score += player.SCORE_UNIT
+
+    def draw_life(self, count) :
+        gctrl.draw_string("Life : " + str(count), player.STATUS_XOFFSET, player.STATUS_YOFFSET, ALIGN_RIGHT)
+
+    def draw_score(self) :
+        gctrl.draw_string("Score : " + str(self.score), player.STATUS_XOFFSET, player.STATUS_YOFFSET, ALIGN_LEFT)
 
 def game_over() :
     gctrl.draw_string("Game Over", 0, 0, ALIGN_CENTER, 80, COLOR_RED)
@@ -34,11 +41,14 @@ def terminate() :
 
 def run_game() :
     global background
-    global snd_explosion
 
     start_game()
 
-    score_count = 0
+    # sound resource
+    snd_explosion = pygame.mixer.Sound(get_snd_resource('snd_explosion'))
+
+    # player
+    game_player = player() 
 
     # aircraft
     aircraft = aircraft_object(0, 0, 'id_aircraft')
@@ -89,8 +99,8 @@ def run_game() :
         background.scroll()
         background.draw()
 
-        draw_life(aircraft.get_life_count())
-        draw_score(score_count)
+        game_player.draw_life(aircraft.get_life_count())
+        game_player.draw_score()
 
         if aircraft.is_life() == False :
             game_over()
@@ -119,7 +129,7 @@ def run_game() :
         # Draw bullet
         if bullets.move(enemy) == True :
             enemy.kill_life()
-            score_count += SCORE_UNIT
+            game_player.update_score()
 
         bullets.draw()
 
@@ -174,7 +184,6 @@ def start_game() :
        
 def init_game() :
     global background
-    global snd_explosion
    
     # backgroud and screen
     background = backgroud_object('id_background')
@@ -183,9 +192,6 @@ def init_game() :
 
     gctrl.set_surface(pygame.display.set_mode((pad_width, pad_height)))
     pygame.display.set_caption(TITLE_STR)
-
-    # sound resource
-    snd_explosion = pygame.mixer.Sound(get_snd_resource('snd_explosion'))
 
 if __name__ == '__main__' :
     init_game()
