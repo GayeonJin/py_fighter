@@ -207,32 +207,5 @@ class fires_group :
 
         return fire
 
-class backgroud_object(game_object) :
-    def __init__(self, resource_id) :
-        resource_path = get_img_resource(resource_id)
-        self.object = pygame.image.load(resource_path)
-        self.object2 = self.object.copy()
-
-        self.width = self.object.get_width()
-        self.height = self.object.get_height()
-
-        self.x = 0
-        self.x2 = self.width
-        self.scroll_width = -2
-
-    def scroll(self) :
-        self.x += self.scroll_width
-        self.x2 += self.scroll_width
-
-        if self.x == -self.width:
-            self.x = self.width
-
-        if self.x2 == -self.width:
-            self.x2 = self.width
-
-    def draw(self) :
-        gctrl.surface.blit(self.object, (self.x, 0))
-        gctrl.surface.blit(self.object2, (self.x2, 0))
-
 if __name__ == '__main__' :
     print('game object')

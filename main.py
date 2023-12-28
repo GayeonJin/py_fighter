@@ -7,6 +7,7 @@ from time import sleep
 
 from gobject import *
 from gresource import *
+from stage import *
 
 TITLE_STR = "Py Fighter"
 
@@ -31,7 +32,7 @@ class player :
 class fighter_game :
     def __init__(self) :  
         # backgroud and screen
-        self.background = backgroud_object('id_background')
+        self.background = backgroud_object()
         pad_width = self.background.width
         pad_height = self.background.height
 
