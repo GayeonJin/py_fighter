@@ -107,12 +107,16 @@ class aircraft_object(game_object) :
     def __init__(self, x, y, resource_id) :
         super().__init__(x, y, resource_id)
 
+        self.boom = pygame.image.load(get_img_resource('id_boom'))
+
     def init_position(self) :
         self.set_position(gctrl.width * 0.05, gctrl.height / 2)
 
 class enemy_object(game_object) :
     def __init__(self, x, y, resource_id, speed) :
         super().__init__(x, y, resource_id)
+
+        self.boom = pygame.image.load(get_img_resource('id_boom'))
 
         self.set_speed(speed, 0)        
         self.kill_timer = 0
@@ -121,12 +125,28 @@ class enemy_object(game_object) :
         self.set_position(gctrl.width, random.randrange(0, gctrl.height - self.height))
         self.kill_timer = 0
 
+    def move(self) :
+        if self.is_life() == True :
+            super().move()
+            if self.is_out_of_range() == True :
+                self.init_position()
+
     def kill_time(self) :
         self.kill_timer += 1
         if self.kill_timer > 10 :
             return False
     
         return True
+
+    def draw(self) :
+        if self.is_life() == True :
+            super().draw()
+        else :
+            gctrl.surface.blit(self.boom, (self.x, self.y))   
+
+            if self.kill_time() == False :
+                self.init_position()
+                self.set_life_count(1)        
 
 class boom_object(game_object) :
     def __init__(self, x, y, resource_id) :

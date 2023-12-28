@@ -114,19 +114,8 @@ class fighter_game :
                 self.game_over()
 
             # Draw enemy
-            enemy.move(ENEMY_SPEED, 0)
-            if enemy.is_out_of_range() == True :
-                enemy.init_position()
-
-            if enemy.is_life() == True :
-                enemy.draw()
-            else :
-                if boom == None :
-                    boom = boom_object(enemy.x, enemy.y, 'id_boom')
-
-                if enemy.kill_time() == False :
-                    enemy.init_position()
-                    enemy.set_life_count(1)
+            enemy.move()
+            enemy.draw()
 
             # Draw fireball
             fire.move()
