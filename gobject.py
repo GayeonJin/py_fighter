@@ -33,6 +33,9 @@ class game_object :
         self.dy = 0
         self.life_count = 1
 
+        self.boom = pygame.image.load(get_img_resource('id_boom'))
+        self.boom_count = 0        
+
     def set_position(self, x, y) : 
         self.x = x
         self.y = y        
@@ -85,6 +88,7 @@ class game_object :
         return self.life_count
     
     def kill_life(self) :
+        self.boom_count = 10
         self.life_count -= 1
         if self.life_count == 0 :
             self.life = False
@@ -104,19 +108,33 @@ class game_object :
         return False
     
 class aircraft_object(game_object) :
+    CRASH_LIFE = 0
+    CRASH_ENERGY = 1
+
     def __init__(self, x, y, resource_id) :
         super().__init__(x, y, resource_id)
-
-        self.boom = pygame.image.load(get_img_resource('id_boom'))
 
     def init_position(self) :
         self.set_position(gctrl.width * 0.05, gctrl.height / 2)
 
+    def check_crash(self, enemy_item, sound_object, crash_type) :
+        is_crash = super().check_crash(enemy_item, sound_object)
+        if is_crash == True :
+            if crash_type == self.CRASH_LIFE :
+                self.kill_life()
+            self.boom_count = 10
+
+        return is_crash
+    
+    def draw(self) :
+        super().draw()
+        if self.boom_count > 0 :
+            gctrl.surface.blit(self.boom, (self.x, self.y))
+            self.boom_count -= 1
+
 class enemy_object(game_object) :
     def __init__(self, x, y, resource_id, speed) :
         super().__init__(x, y, resource_id)
-
-        self.boom = pygame.image.load(get_img_resource('id_boom'))
 
         self.set_speed(speed, 0)        
         self.kill_timer = 0
@@ -146,21 +164,8 @@ class enemy_object(game_object) :
 
             if self.kill_time() == False :
                 self.init_position()
-                self.set_life_count(1)        
-
-class boom_object(game_object) :
-    def __init__(self, x, y, resource_id) :
-        super().__init__(x, y, resource_id)
-        self.count = 0
-
-    def draw(self) :
-        self.count += 1
-        if self.count <= 5 :
-            super().draw()
-            return True
-        
-        return False
-    
+                self.set_life_count(1)
+   
 class bulles_group :
     def __init__(self, speed = BULLET_SPEED) :
         self.bullets = []

@@ -98,9 +98,6 @@ class fighter_game :
                     if event.key == pygame.K_UP or event.key == pygame.K_DOWN :
                         aircraft.set_speed(0, 0)
 
-            # Update aircraft
-            aircraft.move()
-
             # Clear gamepad
             gctrl.surface.fill(COLOR_WHITE)
 
@@ -111,6 +108,8 @@ class fighter_game :
             game_player.draw_life(aircraft.get_life_count())
             game_player.draw_score()
 
+            # Update aircraft
+            aircraft.move()
             if aircraft.is_life() == False :
                 self.game_over()
 
@@ -120,9 +119,10 @@ class fighter_game :
 
             # Draw fireball
             fire.move()
-
             if fire.is_out_of_range() == True :
                 fire = fires.get_fire()
+            
+            fire.draw()
 
             # Draw bullet
             if bullets.move(enemy) == True :
@@ -132,21 +132,12 @@ class fighter_game :
             bullets.draw()
 
             # Check crash
-            if aircraft.check_crash(enemy, snd_explosion) == True :
+            if aircraft.check_crash(enemy, snd_explosion, aircraft_object.CRASH_LIFE) == True :
                 enemy.init_position()
-                aircraft.kill_life()
-                boom = boom_object(aircraft.ex, aircraft.y, 'id_boom')
-            
-            if aircraft.check_crash(fire, snd_explosion) == True :
-                boom = boom_object(aircraft.ex, aircraft.y, 'id_boom')
 
+            aircraft.check_crash(fire, snd_explosion, aircraft_object.CRASH_ENERGY) 
             aircraft.draw()
-            fire.draw()
             
-            if boom != None :
-                if boom.draw() == False :
-                    boom = None
-
             pygame.display.update()
             gctrl.clock.tick(FPS)
             
