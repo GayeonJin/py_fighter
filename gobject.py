@@ -10,8 +10,6 @@ from gresource import *
 AIRCRAFT_SPEED = 5
 BULLET_SPEED = 15
 ENEMY_SPEED = -7
-FIRE_SPEED = -15
-NOFIRE_SPEED = -30
 
 class game_object :
     global gctrl
@@ -136,8 +134,9 @@ class enemy_object(game_object) :
     def __init__(self, x, y, resource_id, speed) :
         super().__init__(x, y, resource_id)
 
-        self.set_speed(speed, 0)        
-        self.kill_timer = 0
+        self.set_speed(speed, 0)
+        self.init_position()
+        self.set_life_count(1)
 
     def init_position(self) :
         self.set_position(gctrl.width, random.randrange(0, gctrl.height - self.height))
@@ -165,7 +164,24 @@ class enemy_object(game_object) :
             if self.kill_time() == False :
                 self.init_position()
                 self.set_life_count(1)
-   
+
+class fires_resource :
+    FIRE_SPEED = -15
+    NOFIRE_SPEED = -30
+
+    def __init__(self) :
+        self.fires = [
+            ('id_fire1', self.FIRE_SPEED),
+            ('id_fire2', self.FIRE_SPEED),
+            (None, self.NOFIRE_SPEED),
+            (None, self.NOFIRE_SPEED), 
+            (None, self.NOFIRE_SPEED),           
+        ]
+
+    def get_info(self) :
+        random.shuffle(self.fires)   
+        return self.fires[0]
+
 class bulles_group :
     def __init__(self, speed = BULLET_SPEED) :
         self.bullets = []
@@ -195,22 +211,6 @@ class bulles_group :
     def draw(self) :
         for i, bullet in enumerate(self.bullets) :
             bullet.draw()        
-
-class fires_group :
-    def __init__(self) :
-        self.fires = []
-
-        self.fires.append(enemy_object(0, 0, 'id_fire1', FIRE_SPEED))
-        self.fires.append(enemy_object(0, 0, 'id_fire2', FIRE_SPEED))
-        for i in range(3) :
-            self.fires.append(enemy_object(0, 0, None, NOFIRE_SPEED))
-
-    def get_fire(self) :
-        random.shuffle(self.fires)
-        fire = self.fires[0]
-        fire.init_position()        
-
-        return fire
 
 if __name__ == '__main__' :
     print('game object')

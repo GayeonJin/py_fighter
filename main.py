@@ -68,13 +68,10 @@ class fighter_game :
 
         # enemy
         enemy = enemy_object(0, 0, 'id_enemy', ENEMY_SPEED)
-        enemy.init_position()
-        enemy.set_life_count(1)
 
-        fires = fires_group()
-        fire = fires.get_fire()
-
-        boom = None
+        fires_res = fires_resource()
+        fire_id, fire_speed = fires_res.get_info()
+        fire = enemy_object(0, 0, fire_id, fire_speed)
 
         crashed = False
         while not crashed :
@@ -120,7 +117,8 @@ class fighter_game :
             # Draw fireball
             fire.move()
             if fire.is_out_of_range() == True :
-                fire = fires.get_fire()
+                fire_id, fire_speed = fires_res.get_info()
+                fire = enemy_object(0, 0, fire_id, fire_speed)
             
             fire.draw()
 
