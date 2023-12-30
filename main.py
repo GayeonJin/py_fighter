@@ -110,14 +110,12 @@ class fighter_game :
             enemy.draw()
 
             # Draw fireball
-            fire.move()
-            if fire.is_out_of_range() == True :
+            if fire.move() == enemy_object.OFF_COURSE :
                 fire = enemy_object(0, 0, fires_res.get_info())
-            
             fire.draw()
 
             # Draw bullet
-            if bullets.move(enemy) == True :
+            if bullets.move(enemy) == bulles_group.SHOT_ENEMY :
                 game_player.update_score()
 
             bullets.draw()

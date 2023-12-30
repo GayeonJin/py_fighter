@@ -140,6 +140,9 @@ class aircraft_object(game_object) :
             self.boom_count -= 1
 
 class enemy_object(game_object) :
+    ON_COURSE = 0
+    OFF_COURSE = 1
+
     def __init__(self, x, y, info) :
         super().__init__(x, y, info[0])
 
@@ -158,6 +161,9 @@ class enemy_object(game_object) :
             super().move()
             if self.is_out_of_range() == True :
                 self.init_position()
+                return self.OFF_COURSE
+            
+        return self.ON_COURSE
 
     def kill_time(self) :
         self.kill_timer += 1
