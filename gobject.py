@@ -7,6 +7,10 @@ import time
 
 from gresource import *
 
+CRASH_TYPE_NONE = 0
+CRASH_TYPE_LIFE = 1
+CRASH_TYPE_ENERGY = 2
+
 AIRCRAFT_SPEED = 5
 BULLET_SPEED = 15
 ENEMY_SPEED = -7
@@ -94,32 +98,33 @@ class game_object :
         else :
             return True
 
-    def check_crash(self, enemy_item, sound_object) :
-        if self.object != None and enemy_item.object != None :
-            if self.ex > enemy_item.x :
-                if (self.y > enemy_item.y and self.y < enemy_item.ey) or (self.ey > enemy_item.y and self.ey < enemy_item.ey) :
+    def check_crash(self, enemy, sound_object) :
+        if enemy.is_life() == False :
+            return False
+        
+        if self.object != None and enemy.object != None :
+            if self.ex > enemy.x :
+                if (self.y > enemy.y and self.y < enemy.ey) or (self.ey > enemy.y and self.ey < enemy.ey) :
                     #print("crashed1 : ",  self.x, self.y, self.ex, self.ey)
-                    #print("crashed2 : ",  enemy_item.x, enemy_item.y, enemy_item.ex, enemy_item.ey)
+                    #print("crashed2 : ",  enemy.x, enemy.y, enemy.ex, enemy.ey)
                     if sound_object != None :
                         sound_object.play()
                     return True
         return False
     
 class aircraft_object(game_object) :
-    CRASH_LIFE = 0
-    CRASH_ENERGY = 1
-
     def __init__(self, x, y, resource_id) :
         super().__init__(x, y, resource_id)
 
     def init_position(self) :
         self.set_position(gctrl.width * 0.05, gctrl.height / 2)
 
-    def check_crash(self, enemy_item, sound_object, crash_type) :
-        is_crash = super().check_crash(enemy_item, sound_object)
+    def check_crash(self, enemy, sound_object) :
+        is_crash = super().check_crash(enemy, sound_object)
         if is_crash == True :
-            if crash_type == self.CRASH_LIFE :
+            if enemy.type == CRASH_TYPE_LIFE :
                 self.kill_life()
+                enemy.kill_life()
             self.boom_count = 10
 
         return is_crash
@@ -131,12 +136,14 @@ class aircraft_object(game_object) :
             self.boom_count -= 1
 
 class enemy_object(game_object) :
-    def __init__(self, x, y, resource_id, speed) :
-        super().__init__(x, y, resource_id)
+    def __init__(self, x, y, info) :
+        super().__init__(x, y, info[0])
 
-        self.set_speed(speed, 0)
+        self.set_speed(info[1], 0)
         self.init_position()
         self.set_life_count(1)
+
+        self.type = info[2]
 
     def init_position(self) :
         self.set_position(gctrl.width, random.randrange(0, gctrl.height - self.height))
@@ -171,11 +178,11 @@ class fires_resource :
 
     def __init__(self) :
         self.fires = [
-            ('id_fire1', self.FIRE_SPEED),
-            ('id_fire2', self.FIRE_SPEED),
-            (None, self.NOFIRE_SPEED),
-            (None, self.NOFIRE_SPEED), 
-            (None, self.NOFIRE_SPEED),           
+            ('id_fire1', self.FIRE_SPEED, CRASH_TYPE_ENERGY),
+            ('id_fire2', self.FIRE_SPEED, CRASH_TYPE_ENERGY),
+            (None, self.NOFIRE_SPEED, CRASH_TYPE_NONE),
+            (None, self.NOFIRE_SPEED, CRASH_TYPE_NONE), 
+            (None, self.NOFIRE_SPEED, CRASH_TYPE_NONE),           
         ]
 
     def get_info(self) :
@@ -198,6 +205,7 @@ class bulles_group :
 
             if bullet.check_crash(enemy, self.snd_shot) == True :
                 self.bullets.remove(bullet)
+                enemy.kill_life()
                 crash = True
 
             if bullet.is_out_of_range() == True :

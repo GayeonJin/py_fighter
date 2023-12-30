@@ -67,11 +67,10 @@ class fighter_game :
         bullets = bulles_group()
 
         # enemy
-        enemy = enemy_object(0, 0, 'id_enemy', ENEMY_SPEED)
+        enemy = enemy_object(0, 0, ('id_enemy', ENEMY_SPEED, CRASH_TYPE_LIFE))
 
         fires_res = fires_resource()
-        fire_id, fire_speed = fires_res.get_info()
-        fire = enemy_object(0, 0, fire_id, fire_speed)
+        fire = enemy_object(0, 0, fires_res.get_info())
 
         crashed = False
         while not crashed :
@@ -117,23 +116,19 @@ class fighter_game :
             # Draw fireball
             fire.move()
             if fire.is_out_of_range() == True :
-                fire_id, fire_speed = fires_res.get_info()
-                fire = enemy_object(0, 0, fire_id, fire_speed)
+                fire = enemy_object(0, 0, fires_res.get_info())
             
             fire.draw()
 
             # Draw bullet
             if bullets.move(enemy) == True :
-                enemy.kill_life()
                 game_player.update_score()
 
             bullets.draw()
 
             # Check crash
-            if aircraft.check_crash(enemy, snd_explosion, aircraft_object.CRASH_LIFE) == True :
-                enemy.init_position()
-
-            aircraft.check_crash(fire, snd_explosion, aircraft_object.CRASH_ENERGY) 
+            aircraft.check_crash(enemy, snd_explosion)
+            aircraft.check_crash(fire, snd_explosion)
             aircraft.draw()
             
             pygame.display.update()
