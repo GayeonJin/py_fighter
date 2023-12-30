@@ -12,8 +12,9 @@ CRASH_TYPE_LIFE = 1
 CRASH_TYPE_ENERGY = 2
 
 AIRCRAFT_SPEED = 5
-BULLET_SPEED = 15
 ENEMY_SPEED = -7
+
+SOUND_MUTE = True
 
 class game_object :
     global gctrl
@@ -107,7 +108,7 @@ class game_object :
                 if (self.y > enemy.y and self.y < enemy.ey) or (self.ey > enemy.y and self.ey < enemy.ey) :
                     #print("crashed1 : ",  self.x, self.y, self.ex, self.ey)
                     #print("crashed2 : ",  enemy.x, enemy.y, enemy.ex, enemy.ey)
-                    if sound_object != None :
+                    if sound_object != None and SOUND_MUTE == False:
                         sound_object.play()
                     return True
         return False
@@ -115,6 +116,9 @@ class game_object :
 class aircraft_object(game_object) :
     def __init__(self, x, y, resource_id) :
         super().__init__(x, y, resource_id)
+
+        self.init_position();
+        self.set_life_count(3)
 
     def init_position(self) :
         self.set_position(gctrl.width * 0.05, gctrl.height / 2)
@@ -190,6 +194,9 @@ class fires_resource :
         return self.fires[0]
 
 class bulles_group :
+    BULLET_SPEED = 15
+    SHOT_ENEMY = 1
+
     def __init__(self, speed = BULLET_SPEED) :
         self.bullets = []
         self.snd_shot = pygame.mixer.Sound(get_snd_resource('snd_shot'))
@@ -199,14 +206,14 @@ class bulles_group :
         self.bullets.append(game_object(x, y, 'id_bullet'))
 
     def move(self, enemy) :
-        crash = False 
+        is_shot = 0 
         for i, bullet in enumerate(self.bullets) :
             bullet.move(self.speed, 0)
 
             if bullet.check_crash(enemy, self.snd_shot) == True :
                 self.bullets.remove(bullet)
                 enemy.kill_life()
-                crash = True
+                is_shot = self.SHOT_ENEMY
 
             if bullet.is_out_of_range() == True :
                 try :
@@ -214,7 +221,7 @@ class bulles_group :
                 except :
                     pass
         
-        return crash
+        return is_shot
 
     def draw(self) :
         for i, bullet in enumerate(self.bullets) :

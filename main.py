@@ -18,13 +18,17 @@ class player :
     STATUS_YOFFSET = 5
 
     def __init__(self) :
+        self.life = 3
         self.score = 0
+
+    def update_life(self, life) :
+        self.life = life
 
     def update_score(self) :
         self.score += player.SCORE_UNIT
 
-    def draw_life(self, count) :
-        gctrl.draw_string("Life : " + str(count), player.STATUS_XOFFSET, player.STATUS_YOFFSET, ALIGN_RIGHT)
+    def draw_life(self) :
+        gctrl.draw_string("Life : " + str(self.life), player.STATUS_XOFFSET, player.STATUS_YOFFSET, ALIGN_RIGHT)
 
     def draw_score(self) :
         gctrl.draw_string("Score : " + str(self.score), player.STATUS_XOFFSET, player.STATUS_YOFFSET, ALIGN_LEFT)
@@ -61,9 +65,6 @@ class fighter_game :
 
         # aircraft
         aircraft = aircraft_object(0, 0, 'id_aircraft')
-        aircraft.init_position()
-        aircraft.set_life_count(3)
-
         bullets = bulles_group()
 
         # enemy
@@ -101,13 +102,8 @@ class fighter_game :
             self.background.scroll()
             self.background.draw()
 
-            game_player.draw_life(aircraft.get_life_count())
+            game_player.draw_life()
             game_player.draw_score()
-
-            # Update aircraft
-            aircraft.move()
-            if aircraft.is_life() == False :
-                self.game_over()
 
             # Draw enemy
             enemy.move()
@@ -126,11 +122,18 @@ class fighter_game :
 
             bullets.draw()
 
+            # Update aircraft
+            aircraft.move()
+
             # Check crash
             aircraft.check_crash(enemy, snd_explosion)
             aircraft.check_crash(fire, snd_explosion)
             aircraft.draw()
-            
+
+            game_player.update_life(aircraft.get_life_count())
+            if game_player.life == 0 :
+                self.game_over()
+
             pygame.display.update()
             gctrl.clock.tick(FPS)
             
