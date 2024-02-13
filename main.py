@@ -5,8 +5,10 @@ import pygame
 import random
 from time import sleep
 
-from gobject import *
 from gresource import *
+from gobject import *
+from fighter import *
+from enemy import *
 from stage import *
 
 TITLE_STR = "Py Fighter"
