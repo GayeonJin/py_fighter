@@ -63,7 +63,8 @@ class fighter_game :
         snd_explosion = pygame.mixer.Sound(get_snd_resource('snd_explosion'))
 
         # player
-        game_player = player() 
+        game_player = player()
+        stage_mgr = stage()
 
         # aircraft
         aircraft = aircraft_object(0, 0, 'id_aircraft')
@@ -99,40 +100,48 @@ class fighter_game :
 
             # Clear gamepad
             gctrl.surface.fill(COLOR_WHITE)
-
+            
             # Draw background
             self.background.scroll()
             self.background.draw()
 
-            game_player.draw_life()
-            game_player.draw_score()
+            if stage_mgr.state == stage.STATE_RUN :
+                game_player.draw_life()
+                game_player.draw_score()
 
-            # Draw enemy
-            enemy.move()
-            enemy.draw()
+                # Draw enemy
+                enemy.move()
+                enemy.draw()
 
-            # Draw fireball
-            if fire.move() == enemy_object.OFF_COURSE :
-                fire = enemy_object(0, 0, fires_res.get_info())
-            fire.draw()
+                # Draw fireball
+                if fire.move() == enemy_object.OFF_COURSE :
+                    fire = enemy_object(0, 0, fires_res.get_info())
+                fire.draw()
 
-            # Draw bullet
-            if bullets.move(enemy) == bulles_group.SHOT_ENEMY :
-                game_player.update_score()
+                # Draw bullet
+                if bullets.move(enemy) == bulles_group.SHOT_ENEMY :
+                    game_player.update_score()
+                    stage_mgr.update_kill_enemy()
 
-            bullets.draw()
+                bullets.draw()
 
-            # Update aircraft
-            aircraft.move()
+                # Update aircraft
+                aircraft.move()
 
-            # Check crash
-            aircraft.check_crash(enemy, snd_explosion)
-            aircraft.check_crash(fire, snd_explosion)
-            aircraft.draw()
+                # Check crash
+                aircraft.check_crash(enemy, snd_explosion)
+                aircraft.check_crash(fire, snd_explosion)
+                aircraft.draw()
 
-            game_player.update_life(aircraft.get_life_count())
-            if game_player.life == 0 :
-                self.game_over()
+                game_player.update_life(aircraft.get_life_count())
+                if game_player.life == 0 :
+                    self.game_over()
+            elif stage_mgr.state == stage.STATE_NEXT :
+                # cleare enemy and bullet
+
+                stage_mgr.state = stage.STATE_WAIT
+            else :
+                stage_mgr.draw()
 
             pygame.display.update()
             gctrl.clock.tick(FPS)
