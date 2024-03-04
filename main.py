@@ -70,12 +70,6 @@ class fighter_game :
         aircraft = aircraft_object(0, 0, 'id_aircraft')
         bullets = bulles_group()
 
-        # enemy
-        enemy = enemy_object(0, 0, ('id_enemy', ENEMY_SPEED, CRASH_TYPE_LIFE))
-
-        fires_res = fires_resource()
-        fire = enemy_object(0, 0, fires_res.get_info())
-
         crashed = False
         while not crashed :
             for event in pygame.event.get() :
@@ -138,6 +132,10 @@ class fighter_game :
                     self.game_over()
             elif stage_mgr.state == stage.STATE_NEXT :
                 # cleare enemy and bullet
+                enemy = enemy_object(0, 0, ('id_enemy', stage_mgr.enemy_speed, CRASH_TYPE_LIFE))
+
+                fires_res = fires_resource()
+                fire = enemy_object(0, 0, fires_res.get_info())
 
                 stage_mgr.state = stage.STATE_WAIT
             else :

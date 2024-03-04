@@ -12,8 +12,6 @@ CRASH_TYPE_NONE = 0
 CRASH_TYPE_LIFE = 1
 CRASH_TYPE_ENERGY = 2
 
-ENEMY_SPEED = -7
- 
 class enemy_object(game_object) :
     ON_COURSE = 0
     OFF_COURSE = 1

@@ -38,13 +38,16 @@ class stage :
     STATE_RUN = 1
     STATE_NEXT = 2
 
+    ENEMY_SPEED = -7
+
     def __init__(self) :
         self.stage_no = 1
-        self.state = stage.STATE_WAIT
+        self.state = stage.STATE_NEXT
         self.stage_timer = 0
 
         self.enemy_count = 0
-        self.enemy_max = 40
+        self.enemy_max = 1
+        self.enemy_speed = stage.ENEMY_SPEED
         self.kill_enemy_count = 0
         self.kill_enemy_max = 10
         self.missed_enemy_count = 0
@@ -57,8 +60,10 @@ class stage :
         print('kill enemy : %d'%self.kill_enemy_count)
         if self.kill_enemy_count >= self.kill_enemy_max :
             self.stage_no += 1
+            self.enemy_max += 1
+            self.enemy_speed -= 1
             self.kill_enemy_count = 0
-            #self.kill_enemy_max += 10
+            self.kill_enemy_max += 5
             self.missed_enemy_count = 0
             self.state = stage.STATE_NEXT
             print('go to next stage')
