@@ -28,6 +28,7 @@ class game_object :
         self.dx = 0
         self.dy = 0
         self.life_count = 1
+        self.energy = 100
 
         self.boom = pygame.image.load(get_img_resource('id_boom'))
         self.boom_count = 0        
@@ -84,6 +85,7 @@ class game_object :
         return self.life_count
     
     def kill_life(self) :
+        self.energy = 100
         self.boom_count = 10
         self.life_count -= 1
         if self.life_count == 0 :

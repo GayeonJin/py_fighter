@@ -35,6 +35,9 @@ class player :
     def draw_score(self) :
         gctrl.draw_string("Score : " + str(self.score), player.STATUS_XOFFSET, player.STATUS_YOFFSET, ALIGN_LEFT)
 
+    def draw_energy(self, energy) :
+        gctrl.draw_string("Energy : " + str(energy), player.STATUS_XOFFSET, 30, ALIGN_LEFT | ALIGN_BOTTOM)
+
 class fighter_game :
     def __init__(self) :  
         # backgroud and screen
@@ -50,7 +53,7 @@ class fighter_game :
 
         pygame.display.update()
         sleep(2)
-        self.run_game()
+        self.run()
 
     def terminate(self) :
         pygame.quit()
@@ -70,6 +73,9 @@ class fighter_game :
         aircraft = aircraft_object(0, 0, 'id_aircraft')
         bullets = bulles_group()
 
+        # enemy
+        fires_res = fires_resource()
+        
         crashed = False
         while not crashed :
             for event in pygame.event.get() :
@@ -102,6 +108,7 @@ class fighter_game :
             if stage_mgr.state == stage.STATE_RUN :
                 game_player.draw_life()
                 game_player.draw_score()
+                game_player.draw_energy(aircraft.energy)
 
                 # Draw enemy
                 enemy.move()
@@ -133,8 +140,6 @@ class fighter_game :
             elif stage_mgr.state == stage.STATE_NEXT :
                 # cleare enemy and bullet
                 enemy = enemy_object(0, 0, ('id_enemy', stage_mgr.enemy_speed, CRASH_TYPE_LIFE))
-
-                fires_res = fires_resource()
                 fire = enemy_object(0, 0, fires_res.get_info())
 
                 stage_mgr.state = stage.STATE_WAIT

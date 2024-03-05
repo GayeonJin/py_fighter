@@ -18,7 +18,7 @@ class aircraft_object(game_object) :
     def __init__(self, x, y, resource_id) :
         super().__init__(x, y, resource_id)
 
-        self.init_position();
+        self.init_position()
         self.set_life_count(3)
 
     def init_position(self) :
@@ -28,8 +28,15 @@ class aircraft_object(game_object) :
         is_crash = super().check_crash(enemy, sound_object)
         if is_crash == True :
             if enemy.type == CRASH_TYPE_LIFE :
+                #print('kill life')
                 self.kill_life()
                 enemy.kill_life()
+            elif enemy.type == CRASH_TYPE_ENERGY and self.boom_count == 0 :
+                #print('decrease energy')
+                self.energy -= 20
+                if self.energy == 0 :
+                    self.kill_life()
+
             self.boom_count = 10
 
         return is_crash
