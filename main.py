@@ -71,10 +71,12 @@ class fighter_game :
 
         # aircraft
         aircraft = aircraft_object(0, 0, 'id_aircraft')
-        bullets = bulles_group()
+        bullets = bullets_group()
 
         # enemy
         fires_res = fires_resource()
+        enemies = enemy_group()
+        fires = enemy_group()
         
         crashed = False
         while not crashed :
@@ -111,16 +113,18 @@ class fighter_game :
                 game_player.draw_energy(aircraft.energy)
 
                 # Draw enemy
-                enemy.move()
-                enemy.draw()
+                enemies.move()
+                enemies.draw()
 
                 # Draw fireball
+                fire = fires.enemies[0]
                 if fire.move() == enemy_object.OFF_COURSE :
-                    fire = enemy_object(0, 0, fires_res.get_info())
-                fire.draw()
+                    fires.clear()
+                    fires.add(enemy_object(0, 0, fires_res.get_info()))
+                fires.draw()
 
                 # Draw bullet
-                if bullets.move(enemy) == bulles_group.SHOT_ENEMY :
+                if bullets.move(enemies.enemies) == bullets_group.SHOT_ENEMY :
                     game_player.update_score()
                     stage_mgr.update_kill_enemy()
 
@@ -130,8 +134,8 @@ class fighter_game :
                 aircraft.move()
 
                 # Check crash
-                aircraft.check_crash(enemy, snd_explosion)
-                aircraft.check_crash(fire, snd_explosion)
+                aircraft.check_crash(enemies.enemies, snd_explosion)
+                aircraft.check_crash(fires.enemies, snd_explosion)
                 aircraft.draw()
 
                 game_player.update_life(aircraft.get_life_count())
@@ -139,8 +143,11 @@ class fighter_game :
                     self.game_over()
             elif stage_mgr.state == stage.STATE_NEXT :
                 # cleare enemy and bullet
-                enemy = enemy_object(0, 0, ('id_enemy', stage_mgr.enemy_speed, CRASH_TYPE_LIFE))
-                fire = enemy_object(0, 0, fires_res.get_info())
+                enemies.clear()
+                enemies.add(enemy_object(0, 0, ('id_enemy', stage_mgr.enemy_speed, CRASH_TYPE_LIFE)))
+
+                fires.clear()
+                fires.add(enemy_object(0, 0, fires_res.get_info()))
 
                 stage_mgr.state = stage.STATE_WAIT
             else :

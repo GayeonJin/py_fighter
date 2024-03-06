@@ -24,22 +24,24 @@ class aircraft_object(game_object) :
     def init_position(self) :
         self.set_position(gctrl.width * 0.05, gctrl.height / 2)
 
-    def check_crash(self, enemy, sound_object) :
-        is_crash = super().check_crash(enemy, sound_object)
-        if is_crash == True :
-            if enemy.type == CRASH_TYPE_LIFE :
-                #print('kill life')
-                self.kill_life()
-                enemy.kill_life()
-            elif enemy.type == CRASH_TYPE_ENERGY and self.boom_count == 0 :
-                #print('decrease energy')
-                self.energy -= 20
-                if self.energy == 0 :
+    def check_crash(self, enemies, sound_object) :
+        for i, enemy in enumerate(enemies) :
+            is_crash = super().check_crash(enemy, sound_object)
+            if is_crash == True :
+                if enemy.type == CRASH_TYPE_LIFE :
+                    #print('kill life')
                     self.kill_life()
+                    enemy.kill_life()
+                elif enemy.type == CRASH_TYPE_ENERGY and self.boom_count == 0 :
+                    #print('decrease energy')
+                    self.energy -= 20
+                    if self.energy == 0 :
+                        self.kill_life()
 
-            self.boom_count = 10
-
-        return is_crash
+                self.boom_count = 10
+                return is_crash
+        
+        return False
     
     def draw(self) :
         super().draw()
@@ -47,7 +49,7 @@ class aircraft_object(game_object) :
             gctrl.surface.blit(self.boom, (self.x, self.y))
             self.boom_count -= 1
 
-class bulles_group :
+class bullets_group :
     BULLET_SPEED = 15
     SHOT_ENEMY = 1
 
@@ -59,23 +61,27 @@ class bulles_group :
     def add(self, x, y) :
         self.bullets.append(game_object(x, y, 'id_bullet'))
 
-    def move(self, enemy) :
+    def move(self, enemies) :
         is_shot = 0 
+
         for i, bullet in enumerate(self.bullets) :
             bullet.move(self.speed, 0)
 
-            if bullet.check_crash(enemy, self.snd_shot) == True :
-                self.bullets.remove(bullet)
-                enemy.kill_life()
-                is_shot = self.SHOT_ENEMY
-
-            if bullet.is_out_of_range() == True :
-                try :
+            for j, enemy in enumerate(enemies) :
+                if bullet.check_crash(enemy, self.snd_shot) == True :
                     self.bullets.remove(bullet)
-                except :
-                    pass
-        
-        return is_shot
+                    enemy.kill_life()
+                    is_shot = self.SHOT_ENEMY
+
+                if bullet.is_out_of_range() == True :
+                    try :
+                        self.bullets.remove(bullet)
+                    except :
+                        pass
+
+                if is_shot == self.SHOT_ENEMY :
+                    return is_shot
+        return 0
 
     def draw(self) :
         for i, bullet in enumerate(self.bullets) :

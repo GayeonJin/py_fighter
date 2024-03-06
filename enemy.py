@@ -55,6 +55,24 @@ class enemy_object(game_object) :
                 self.init_position()
                 self.set_life_count(1)
 
+class enemy_group :
+    def __init__(self) :
+        self.enemies = []
+
+    def add(self, enemy) :
+        self.enemies.append(enemy)
+
+    def clear(self) :
+        self.enemies = []
+
+    def move(self) :
+        for i, enemy in enumerate(self.enemies) :
+            enemy.move()
+
+    def draw(self) :
+        for i, enemy in enumerate(self.enemies) :
+            enemy.draw()    
+
 class fires_resource :
     FIRE_SPEED = -15
     NOFIRE_SPEED = -30
