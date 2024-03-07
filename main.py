@@ -7,6 +7,7 @@ from time import sleep
 
 from gresource import *
 from gobject import *
+from bullet import *
 from fighter import *
 from enemy import *
 from stage import *

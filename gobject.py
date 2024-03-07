@@ -12,7 +12,7 @@ SOUND_MUTE = True
 class game_object :
     global gctrl
 
-    def __init__(self, x, y, resource_id) :
+    def __init__(self, x, y, resource_id, dx = 0, dy = 0) :
         if resource_id != None :
             resource_path = get_img_resource(resource_id)
             self.object = pygame.image.load(resource_path)
@@ -25,8 +25,8 @@ class game_object :
 
         self.set_position(x, y)
 
-        self.dx = 0
-        self.dy = 0
+        self.dx = dx
+        self.dy = dy
         self.life_count = 1
         self.energy = 100
 

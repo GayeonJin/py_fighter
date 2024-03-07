@@ -49,43 +49,5 @@ class aircraft_object(game_object) :
             gctrl.surface.blit(self.boom, (self.x, self.y))
             self.boom_count -= 1
 
-class bullets_group :
-    BULLET_SPEED = 15
-    SHOT_ENEMY = 1
-
-    def __init__(self, speed = BULLET_SPEED) :
-        self.bullets = []
-        self.snd_shot = pygame.mixer.Sound(get_snd_resource('snd_shot'))
-        self.speed = speed
-
-    def add(self, x, y) :
-        self.bullets.append(game_object(x, y, 'id_bullet'))
-
-    def move(self, enemies) :
-        is_shot = 0 
-
-        for i, bullet in enumerate(self.bullets) :
-            bullet.move(self.speed, 0)
-
-            for j, enemy in enumerate(enemies) :
-                if bullet.check_crash(enemy, self.snd_shot) == True :
-                    self.bullets.remove(bullet)
-                    enemy.kill_life()
-                    is_shot = self.SHOT_ENEMY
-
-                if bullet.is_out_of_range() == True :
-                    try :
-                        self.bullets.remove(bullet)
-                    except :
-                        pass
-
-                if is_shot == self.SHOT_ENEMY :
-                    return is_shot
-        return 0
-
-    def draw(self) :
-        for i, bullet in enumerate(self.bullets) :
-            bullet.draw()        
-
 if __name__ == '__main__' :
     print('fighter object')
