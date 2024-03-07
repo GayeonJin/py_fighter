@@ -113,13 +113,14 @@ class fighter_game :
                 game_player.draw_energy(aircraft.energy)
 
                 # Draw enemy
-                enemies.move()
+                missing_num = enemies.move()
+                if missing_num > 0 :
+                    enemies.add(enemy_object(0, 0, ('id_enemy', stage_mgr.enemy_speed, CRASH_TYPE_LIFE)))
                 enemies.draw()
 
                 # Draw fireball
-                fire = fires.enemies[0]
-                if fire.move() == enemy_object.OFF_COURSE :
-                    fires.clear()
+                missing_num =  fires.move()
+                if missing_num > 0 :
                     fires.add(enemy_object(0, 0, fires_res.get_info()))
                 fires.draw()
 

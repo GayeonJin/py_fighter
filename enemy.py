@@ -66,8 +66,13 @@ class enemy_group :
         self.enemies = []
 
     def move(self) :
+        remove_count = 0
         for i, enemy in enumerate(self.enemies) :
-            enemy.move()
+            if enemy.move() == enemy_object.OFF_COURSE : 
+                self.enemies.remove(enemy)
+                remove_count += 1
+                
+        return remove_count
 
     def draw(self) :
         for i, enemy in enumerate(self.enemies) :
