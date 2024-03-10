@@ -44,9 +44,8 @@ class game_object :
         self.dy = del_y
 
     def move(self, del_x = 0, del_y = 0) :
-        if del_x == 0 :
+        if del_x == 0 and del_y == 0 : 
             del_x = self.dx
-        if del_y == 0 :
             del_y = self.dy
 
         self.x += del_x

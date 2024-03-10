@@ -28,6 +28,7 @@ class enemy_object(game_object) :
     def init_position(self) :
         self.set_position(gctrl.width, random.randrange(0, gctrl.height - self.height))
         self.kill_timer = 0
+        self.shoot_timer = 0
 
     def move(self) :
         if self.is_life() == True :
