@@ -19,35 +19,33 @@ class aircraft_object(game_object) :
         super().__init__(x, y, resource_id)
 
         self.init_position()
-        self.set_life_count(3)
 
     def init_position(self) :
         self.set_position(gctrl.width * 0.05, gctrl.height / 2)
+
+    def callback_kill(self) :
+        if self.energy == 0 :
+            self.init_position()
+            self.status = game_object.STATUS_KILL
+        else :
+            self.status = game_object.STATUS_ACTIVE
 
     def check_crash(self, enemies, sound_object) :
         for i, enemy in enumerate(enemies) :
             is_crash = super().check_crash(enemy, sound_object)
             if is_crash == True :
                 if enemy.type == CRASH_TYPE_LIFE :
-                    #print('kill life')
-                    self.kill_life()
-                    enemy.kill_life()
-                elif enemy.type == CRASH_TYPE_ENERGY and self.boom_count == 0 :
-                    #print('decrease energy')
+                    self.energy = 0
+                    self.set_inactive()
+                    enemy.set_inactive()
+                elif enemy.type == CRASH_TYPE_ENERGY and self.status == game_object.STATUS_ACTIVE :
+                    print('decrease energy')
                     self.energy -= 20
-                    if self.energy == 0 :
-                        self.kill_life()
+                    self.set_inactive()
 
-                self.boom_count = 10
                 return is_crash
         
         return False
-    
-    def draw(self) :
-        super().draw()
-        if self.boom_count > 0 :
-            gctrl.surface.blit(self.boom, (self.x, self.y))
-            self.boom_count -= 1
 
 if __name__ == '__main__' :
     print('fighter object')

@@ -24,9 +24,6 @@ class player :
         self.life = 3
         self.score = 0
 
-    def update_life(self, life) :
-        self.life = life
-
     def update_score(self) :
         self.score += player.SCORE_UNIT
 
@@ -78,6 +75,9 @@ class fighter_game :
         fires_res = fires_resource()
         enemies = enemy_group()
         fires = enemy_group()
+
+        # boom manager
+        boom_mgr.clear_all()
         
         crashed = False
         while not crashed :
@@ -109,10 +109,6 @@ class fighter_game :
             self.background.draw()
 
             if stage_mgr.state == stage.STATE_RUN :
-                game_player.draw_life()
-                game_player.draw_score()
-                game_player.draw_energy(aircraft.energy)
-
                 # Draw enemy
                 missing_num = enemies.move()
                 if missing_num > 0 :
@@ -140,9 +136,20 @@ class fighter_game :
                 aircraft.check_crash(fires.enemies, snd_explosion)
                 aircraft.draw()
 
-                game_player.update_life(aircraft.get_life_count())
-                if game_player.life == 0 :
-                    self.game_over()
+                # Draw boom
+                boom_mgr.run()
+
+                if aircraft.is_life() == False :
+                    game_player.life -= 1
+                    if game_player.life == 0 :
+                        self.game_over()
+                    else :
+                        aircraft.set_life()
+
+                game_player.draw_life()
+                game_player.draw_score()
+                game_player.draw_energy(aircraft.energy)
+
             elif stage_mgr.state == stage.STATE_NEXT :
                 # cleare enemy and bullet
                 enemies.clear()
@@ -150,6 +157,8 @@ class fighter_game :
 
                 fires.clear()
                 fires.add(enemy_object(0, 0, fires_res.get_info()))
+
+                boom_mgr.clear_all()
 
                 stage_mgr.state = stage.STATE_WAIT
             else :

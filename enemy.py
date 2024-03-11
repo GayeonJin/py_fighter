@@ -13,48 +13,37 @@ CRASH_TYPE_LIFE = 1
 CRASH_TYPE_ENERGY = 2
 
 class enemy_object(game_object) :
-    ON_COURSE = 0
-    OFF_COURSE = 1
+    AREA_IN = 0
+    AREA_OUT = 1
 
     def __init__(self, x, y, info) :
         super().__init__(x, y, info[0])
 
         self.set_speed(info[1], 0)
         self.init_position()
-        self.set_life_count(1)
 
         self.type = info[2]
 
     def init_position(self) :
         self.set_position(gctrl.width, random.randrange(0, gctrl.height - self.height))
-        self.kill_timer = 0
         self.shoot_timer = 0
 
     def move(self) :
-        if self.is_life() == True :
+        if self.status == game_object.STATUS_ACTIVE :
             super().move()
             if self.is_out_of_range() == True :
                 self.init_position()
-                return self.OFF_COURSE
+                return self.AREA_OUT
             
-        return self.ON_COURSE
+        return self.AREA_IN
 
-    def kill_time(self) :
-        self.kill_timer += 1
-        if self.kill_timer > 10 :
-            return False
-    
-        return True
+    def callback_kill(self) :
+        self.init_position()
+        self.set_life()
 
     def draw(self) :
-        if self.is_life() == True :
+        if self.status == game_object.STATUS_ACTIVE :
             super().draw()
-        else :
-            gctrl.surface.blit(self.boom, (self.x, self.y))   
-
-            if self.kill_time() == False :
-                self.init_position()
-                self.set_life_count(1)
 
 class enemy_group :
     def __init__(self) :
@@ -69,7 +58,7 @@ class enemy_group :
     def move(self) :
         remove_count = 0
         for i, enemy in enumerate(self.enemies) :
-            if enemy.move() == enemy_object.OFF_COURSE : 
+            if enemy.move() == enemy_object.AREA_OUT : 
                 self.enemies.remove(enemy)
                 remove_count += 1
                 

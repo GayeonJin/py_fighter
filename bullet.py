@@ -41,7 +41,7 @@ class bullets_group :
             for j, enemy in enumerate(enemies) :
                 if bullet.check_crash(enemy, self.snd_shot) == True :
                     self.bullets.remove(bullet)
-                    enemy.kill_life()
+                    enemy.set_inactive()
                     is_shot = self.SHOT_ENEMY
 
                 if bullet.is_out_of_range() == True :

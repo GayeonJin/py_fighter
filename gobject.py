@@ -9,8 +9,10 @@ from gresource import *
 
 SOUND_MUTE = True
 
-class game_object :
-    global gctrl
+class game_object :   
+    STATUS_KILL = 0
+    STATUS_INACTIVE = 1
+    STATUS_ACTIVE = 2
 
     def __init__(self, x, y, resource_id, dx = 0, dy = 0) :
         if resource_id != None :
@@ -27,11 +29,8 @@ class game_object :
 
         self.dx = dx
         self.dy = dy
-        self.life_count = 1
         self.energy = 100
-
-        self.boom = pygame.image.load(get_img_resource('id_boom'))
-        self.boom_count = 0        
+        self.status = game_object.STATUS_ACTIVE
 
     def set_position(self, x, y) : 
         self.x = x
@@ -64,48 +63,59 @@ class game_object :
             gctrl.surface.blit(self.object, (self.x, self.y))            
 
     def is_out_of_range(self) :
-        if self.x <= 0 or self.x >= gctrl.width :
+        if self.x <= 0 or self.x >= gctrl.width or self.y <= 0 or self.y >= gctrl.height :
             return True
         else :
             return False
 
     def is_life(self) :
-        if self.life_count > 0 :
-            return True
-        else :
-            return False
+        status = False if self.status == game_object.STATUS_KILL else True
+        return status
     
-    def set_life_count(self, count) :
-        self.life_count = count
-        if self.life_count > 0 :
-            self.life = True
+    def set_life(self) :
+        self.energy = 100        
+        self.status = game_object.STATUS_ACTIVE
 
-    def get_life_count(self) :
-        return self.life_count
-    
-    def kill_life(self) :
-        self.energy = 100
-        self.boom_count = 10
-        self.life_count -= 1
-        if self.life_count == 0 :
-            self.life = False
-            return False
-        else :
-            return True
+    def set_inactive(self) :
+        self.status = game_object.STATUS_INACTIVE
+        boom_mgr.add(self)
 
-    def check_crash(self, enemy, sound_object) :
-        if enemy.is_life() == False :
-            return False
-        
+    def check_crash(self, enemy, sound_object) :       
         if self.object != None and enemy.object != None :
-            if self.ex > enemy.x :
-                if (self.y > enemy.y and self.y < enemy.ey) or (self.ey > enemy.y and self.ey < enemy.ey) :
-                    #print("crashed1 : ",  self.x, self.y, self.ex, self.ey)
-                    #print("crashed2 : ",  enemy.x, enemy.y, enemy.ex, enemy.ey)
-                    if sound_object != None and SOUND_MUTE == False:
-                        sound_object.play()
-                    return True
+            if enemy.status == game_object.STATUS_ACTIVE :    
+                if self.ex > enemy.x :
+                    if (self.y > enemy.y and self.y < enemy.ey) or (self.ey > enemy.y and self.ey < enemy.ey) :
+                        #print("crashed1 : ",  self.x, self.y, self.ex, self.ey)
+                        #print("crashed2 : ",  enemy.x, enemy.y, enemy.ex, enemy.ey)
+                        if sound_object != None and SOUND_MUTE == False:
+                            sound_object.play()
+                        return True
         return False
+
+class boom_manager :
+    def __init__(self) :
+        self.boom = pygame.image.load(get_img_resource('id_boom'))
+        self.boom_objects = [] 
+
+    def add(self, object, count = 10) :
+        self.boom_objects.append([object, count])
+
+    def clear_all(self) :
+        self.boom_objects = []
+
+    def run(self) :
+        for i, [object, count] in enumerate(self.boom_objects) :
+            if object.status == game_object.STATUS_INACTIVE :
+                gctrl.surface.blit(self.boom, (object.x, object.y))
+
+            count -= 1
+            self.boom_objects[i] = [object, count]
+            if count == 0 :
+                self.boom_objects.remove([object, count])
+
+                object.callback_kill()
+
+boom_mgr = boom_manager()
 
 if __name__ == '__main__' :
     print('game object')
